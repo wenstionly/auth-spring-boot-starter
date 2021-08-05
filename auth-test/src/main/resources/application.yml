@@ -1,0 +1,7 @@
+cc:
+  lj1:
+    auth:
+      enable: true
+spring:
+  redis:
+    password: redis-on-mba
