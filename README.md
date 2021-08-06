@@ -4,7 +4,7 @@
 
 ```auth-spring-boot-starter``` 是一款基于token令牌的简单用户认证组件。其工作原理如下：
 
-1. 按照 URL PARAM --> HTTP Header 的顺序，寻找令牌
+1. 按照 HTTP Header --> URL PARAM 的顺序，寻找令牌
 2. 根据令牌在redis中找到对应的用户id
 3. 通过继承自 ```AuthUserService``` 的用户服务，获取对应的用户的详情
 
