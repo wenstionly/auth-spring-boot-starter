@@ -1,17 +1,17 @@
-package cc.lj1.auth.utils;
+package cc.lj1.auth.services;
 
 import cc.lj1.auth.AuthenticatableUser;
+import cc.lj1.auth.core.utils.CacheUtils;
 import cc.lj1.auth.properties.AuthProperties;
 import cc.lj1.auth.services.AuthUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
 
 @Component
-public class AuthUtils {
+public class AuthTokenService {
     private static final String PREFIX_TOKENMAP = "T2U.";
     private static final String PREFIX_USERMAP = "U2T.";
 
@@ -24,9 +24,9 @@ public class AuthUtils {
     @Autowired(required = false)
     private AuthUserService authUserService;
 
-    public AuthenticatableUser check(String token, HttpServletRequest request) {
+    public AuthenticatableUser check(String token, String agentType) {
         AuthenticatableUser user = null;
-        AuthProperties.AgentInfo agentInfo = authProperties.getAgentInfo(request);
+        AuthProperties.AgentInfo agentInfo = authProperties.getAgentInfo(agentType);
         String k = PREFIX_TOKENMAP + agentInfo.getPrefix() + token;
         String uid = cacheUtils.getString(k);
         if(StringUtils.hasLength(uid)) {
@@ -41,23 +41,23 @@ public class AuthUtils {
         return user;
     }
 
-    public String create(String uid, HttpServletRequest request) {
+    public String create(String uid, String agentType) {
         if(uid == null || uid.isEmpty())
             return null;
-        AuthProperties.AgentInfo agentInfo = authProperties.getAgentInfo(request);
+        AuthProperties.AgentInfo agentInfo = authProperties.getAgentInfo(agentType);
         if(agentInfo.isConflict()) {
             conflict(uid, agentInfo.getName());
         }
         String token = cleanUUID();
         String k = PREFIX_TOKENMAP + agentInfo.getPrefix() + token;
         String k2 = PREFIX_USERMAP + uid;
-        cacheUtils.setString(k, token, agentInfo.getExpire());
+        cacheUtils.setString(k, uid, agentInfo.getExpire());
         cacheUtils.pushToList(k2, agentInfo.getPrefix() + token);
         return token;
     }
 
-    public void remove(String token, HttpServletRequest request) {
-        AuthProperties.AgentInfo agentInfo = authProperties.getAgentInfo(request);
+    public void remove(String token, String agentType) {
+        AuthProperties.AgentInfo agentInfo = authProperties.getAgentInfo(agentType);
         String k = PREFIX_TOKENMAP + agentInfo.getPrefix() + token;
         cacheUtils.setString(k, null);
         String uid = cacheUtils.getString(k);

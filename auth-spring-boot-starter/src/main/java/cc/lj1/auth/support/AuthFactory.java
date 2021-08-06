@@ -1,9 +1,10 @@
 package cc.lj1.auth.support;
 
-import cc.lj1.auth.interceptor.AuthInterceptor;
+import cc.lj1.auth.core.AuthArgumentResolver;
+import cc.lj1.auth.core.WebMfcConfig;
 import cc.lj1.auth.properties.AuthProperties;
-import cc.lj1.auth.utils.AuthUtils;
-import cc.lj1.auth.utils.CacheUtils;
+import cc.lj1.auth.services.AuthTokenService;
+import cc.lj1.auth.core.utils.CacheUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -20,19 +21,24 @@ public class AuthFactory {
 
     @Bean
     @ConditionalOnProperty(prefix = "cc.lj1.auth", name = "enable", havingValue = "true")
-    public WebMvcConfigurer authInterceptor() {
-        return new AuthInterceptor();
+    public WebMvcConfigurer webMvcConfigurer() {
+        return new WebMfcConfig();
     }
 
     @Bean
     @ConditionalOnProperty(prefix = "cc.lj1.auth", name = "enable", havingValue = "true")
-    public AuthUtils authUtils() {
-        return new AuthUtils();
+    public AuthTokenService authTokenService() {
+        return new AuthTokenService();
     }
 
     @Bean
     @ConditionalOnProperty(prefix = "cc.lj1.auth", name = "enable", havingValue = "true")
     public CacheUtils cacheUtils() {
         return new CacheUtils();
+    }
+
+    @Bean
+    public AuthArgumentResolver argumentResolver() {
+        return new AuthArgumentResolver();
     }
 }

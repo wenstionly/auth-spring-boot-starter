@@ -1,76 +1,59 @@
-package cc.lj1.auth.interceptor;
+package cc.lj1.auth.core;
 
 import cc.lj1.auth.AuthenticatableRole;
 import cc.lj1.auth.AuthenticatableUser;
+import cc.lj1.auth.annotation.RequestAuthentication;
+import cc.lj1.auth.annotation.RequestPermission;
 import cc.lj1.auth.exception.AuthFailedException;
 import cc.lj1.auth.exception.AuthForbiddenException;
 import cc.lj1.auth.properties.AuthProperties;
-import cc.lj1.auth.utils.AuthUtils;
-import cc.lj1.auth.annotation.AuthAccessControl;
-import cc.lj1.auth.annotation.AuthRequired;
+import cc.lj1.auth.services.AuthTokenService;
 import eu.bitwalker.useragentutils.UserAgent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
-public class AuthInterceptor implements WebMvcConfigurer {
-    @Autowired
-    private AuthUtils authUtils;
+class AuthInterceptor implements HandlerInterceptor {
+    private AuthHelper authHelper;
 
-    @Autowired
-    AuthProperties authProperties;
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new Interceptor(authUtils, authProperties))
-                .addPathPatterns("/**");
+    public AuthInterceptor(AuthTokenService authTokenService, AuthProperties authProperties) {
+        this.authHelper = new AuthHelper(authTokenService, authProperties);
     }
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        // 处理Agent信息
+        authHelper.proceedAgentInfo(request);
+        if(handler instanceof HandlerMethod) {
+            Class clz = ((HandlerMethod) handler).getBeanType();
+            Method method = ((HandlerMethod) handler).getMethod();
 
-    static private class Interceptor implements HandlerInterceptor {
-        private AuthHelper authHelper;
+            RequestAuthentication authForClz = (RequestAuthentication) clz.getAnnotation(RequestAuthentication.class);
+            RequestAuthentication authForMethod = method.getAnnotation(RequestAuthentication.class);
+            RequestPermission acForClz = (RequestPermission) clz.getAnnotation(RequestPermission.class);
+            RequestPermission acForMethod = method.getAnnotation(RequestPermission.class);
 
-        public Interceptor(AuthUtils authUtils, AuthProperties authProperties) {
-            this.authHelper = new AuthHelper(authUtils, authProperties);
-        }
-        @Override
-        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-            // 处理Agent信息
-            authHelper.proceedAgentInfo(request);
-            if(handler instanceof HandlerMethod) {
-                Class clz = ((HandlerMethod) handler).getBeanType();
-                Method method = ((HandlerMethod) handler).getMethod();
-
-                AuthRequired authForClz = (AuthRequired) clz.getAnnotation(AuthRequired.class);
-                AuthRequired authForMethod = method.getAnnotation(AuthRequired.class);
-                AuthAccessControl acForClz = (AuthAccessControl) clz.getAnnotation(AuthAccessControl.class);
-                AuthAccessControl acForMethod = method.getAnnotation(AuthAccessControl.class);
-
-                String acName = acForMethod != null ? acForMethod.value() : (acForClz != null ? acForClz.value() : null);
-                boolean needAuth = (acName != null) || (authForMethod != null) || (authForClz != null);
-                if(needAuth) {
-                    AuthenticatableUser user = authHelper.check(request);
-                    if(user == null)
-                        throw new AuthFailedException();
-                    if(!authHelper.checkPermission(user, acName))
-                        throw new AuthForbiddenException();
-                }
+            String acName = acForMethod != null ? acForMethod.value() : (acForClz != null ? acForClz.value() : null);
+            boolean needAuth = (acName != null) || (authForMethod != null) || (authForClz != null);
+            if(needAuth) {
+                AuthenticatableUser user = authHelper.check(request);
+                if(user == null)
+                    throw new AuthFailedException();
+                if(!authHelper.checkPermission(user, acName))
+                    throw new AuthForbiddenException();
             }
-            return true;
         }
+        return true;
     }
 
     static private class AuthHelper {
-        AuthUtils authUtils;
+        AuthTokenService authTokenService;
         AuthProperties authProperties;
-        public AuthHelper(AuthUtils authUtils, AuthProperties authProperties) {
-            this.authUtils = authUtils;
+        public AuthHelper(AuthTokenService authTokenService, AuthProperties authProperties) {
+            this.authTokenService = authTokenService;
             this.authProperties = authProperties;
         }
 
@@ -112,7 +95,7 @@ public class AuthInterceptor implements WebMvcConfigurer {
             AuthenticatableUser user = null;
             String token = getTokenFromRequest(request);
             if(token != null) {
-                user = authUtils.check(token, request);
+                user = authTokenService.check(token, (String) request.getAttribute(AuthProperties.AGENT_KEY));
             }
             request.setAttribute(AuthProperties.USER_KEY, user);
             return user;

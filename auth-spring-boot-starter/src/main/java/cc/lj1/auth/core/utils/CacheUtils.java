@@ -1,4 +1,4 @@
-package cc.lj1.auth.utils;
+package cc.lj1.auth.core.utils;
 
 import cc.lj1.auth.properties.AuthProperties;
 import com.alibaba.fastjson.JSON;
