@@ -45,7 +45,7 @@ public class AuthTokenService {
         if(uid == null || uid.isEmpty())
             return null;
         AuthProperties.AgentInfo agentInfo = authProperties.getAgentInfo(agentType);
-        if(agentInfo.isConflict()) {
+        if(agentInfo.getConflict()) {
             conflict(uid, agentInfo.getName());
         }
         String token = cleanUUID();

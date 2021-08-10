@@ -89,7 +89,7 @@ public class AuthProperties {
     static public class AgentInfo {
         private String name;
         private String prefix;
-        private int expire;
-        private boolean conflict;
+        private Integer expire;
+        private Boolean conflict;
     }
 }

@@ -6,7 +6,7 @@
 
     <groupId>cc.lj1</groupId>
     <artifactId>auth-spring-boot-starter</artifactId>
-    <version>1.0</version>
+    <version>1.0.0</version>
     <build>
         <plugins>
             <plugin>
