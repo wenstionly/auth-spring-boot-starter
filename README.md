@@ -29,7 +29,7 @@
 配置项如下：
 
 ```
-cc.lj1.auth.enabled = true                 # 必须，是否启用
+cc.lj1.auth.enable = true                  # 必须，是否启用
 cc.lj1.auth.cache-prefix = cc.lj1.auth     # 可选，用于指定Redis中存储的本组件相关数据的key的前缀，用来与其他redis数据隔离
 cc.lj1.auth.input-key = token              # 可选，用于指定从URL PARAM中获取令牌时使用的field name
 cc.lj1.auth.header-key = X-Token           # 可选，用于指定从HTTP Header中获取令牌时使用的header field name

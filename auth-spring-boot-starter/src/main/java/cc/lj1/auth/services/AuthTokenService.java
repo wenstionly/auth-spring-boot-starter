@@ -3,7 +3,6 @@ package cc.lj1.auth.services;
 import cc.lj1.auth.AuthenticatableUser;
 import cc.lj1.auth.core.utils.CacheUtils;
 import cc.lj1.auth.properties.AuthProperties;
-import cc.lj1.auth.services.AuthUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;

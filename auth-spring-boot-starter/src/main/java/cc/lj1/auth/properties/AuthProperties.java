@@ -1,6 +1,9 @@
 package cc.lj1.auth.properties;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -16,11 +19,15 @@ public class AuthProperties {
     public static final String AGENT_KEY = "x-agent";
     public static final String USER_KEY = "x-user";
 
+    private Boolean enable = true;
     private String cachePrefix = "cc.lj1.auth";
     private String inputKey = "token";
     private String headerKey = "X-Token";
+    private AgentConfiguration agent = null;
 
     // 内置配置
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private Map<String, AgentInfo> agentInfoMap;
 
     public AuthProperties() {
@@ -86,10 +93,21 @@ public class AuthProperties {
     }
 
     @Data
-    static public class AgentInfo {
+    static public class AgentInfo extends AgentConfigItem {
         private String name;
         private String prefix;
+    }
+
+    @Data
+    static private class AgentConfigItem {
         private Integer expire;
         private Boolean conflict;
+    }
+
+    @Data
+    private class AgentConfiguration {
+        private AgentConfigItem desktop;
+        private AgentConfigItem mobile;
+        private AgentConfigItem tablet;
     }
 }
