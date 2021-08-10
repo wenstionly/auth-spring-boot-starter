@@ -23,13 +23,17 @@ public class WebMfcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AuthInterceptor(authTokenService, authProperties))
-                .addPathPatterns("/**");
+        if(authProperties.getEnable()) {
+            registry.addInterceptor(new AuthInterceptor(authTokenService, authProperties))
+                    .addPathPatterns("/**");
+        }
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(authArgumentResolver);
-        WebMvcConfigurer.super.addArgumentResolvers(resolvers);
+        if(authProperties.getEnable()) {
+            resolvers.add(authArgumentResolver);
+            WebMvcConfigurer.super.addArgumentResolvers(resolvers);
+        }
     }
 }

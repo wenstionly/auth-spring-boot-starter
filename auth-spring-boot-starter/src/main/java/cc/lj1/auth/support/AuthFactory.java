@@ -20,19 +20,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class AuthFactory {
 
     @Bean
-    @ConditionalOnProperty(prefix = "cc.lj1.auth", name = "enable", havingValue = "true")
     public WebMvcConfigurer webMvcConfigurer() {
         return new WebMfcConfig();
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "cc.lj1.auth", name = "enable", havingValue = "true")
     public AuthTokenService authTokenService() {
         return new AuthTokenService();
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "cc.lj1.auth", name = "enable", havingValue = "true")
     public CacheUtils cacheUtils() {
         return new CacheUtils();
     }
