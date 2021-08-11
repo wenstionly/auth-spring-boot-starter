@@ -18,6 +18,7 @@ import java.util.Map;
 public class AuthProperties {
     public static final String AGENT_KEY = "x-agent";
     public static final String USER_KEY = "x-user";
+    public static final String TOKEN_KEY = "x-token";
 
     private Boolean enable = true;
     private String cachePrefix = "cc.lj1.auth";

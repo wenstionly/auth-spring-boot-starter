@@ -192,3 +192,25 @@ public class TestController {
 * ```void conflict(String uid, String agentType)```
 
 使指定的用户的令牌全部无效。如果agentType设置为null，则会使三端所有令牌全部无效。
+
+为了从已经认证过的连接中获得附带的token，组件提供了一个 ```@RequestAuthenticationToken``` 注解来帮助用户在控制器中获得token值，以便做注销等处理。例如：
+
+```java
+import cc.lj1.auth.annotation.RequestAuthentication;
+import cc.lj1.auth.annotation.RequestAuthenticationToken;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RequestMapping("/")
+@RestController
+public class TestController {
+
+    @GetMapping("/acl")
+    @RequestAuthentication
+    public String testAgentType(@RequestAuthenticationToken String token) {
+        return "token for this request is " + RequestAuthenticationToken;
+    }
+
+}
+```

@@ -27,6 +27,7 @@ class AuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 处理Agent信息
         authHelper.proceedAgentInfo(request);
+        authHelper.proceedToken(request);
         if(handler instanceof HandlerMethod) {
             Class clz = ((HandlerMethod) handler).getBeanType();
             Method method = ((HandlerMethod) handler).getMethod();
@@ -91,9 +92,15 @@ class AuthInterceptor implements HandlerInterceptor {
             }
         }
 
+        public String proceedToken(HttpServletRequest request) {
+            String token = getTokenFromRequest(request);
+            request.setAttribute(AuthProperties.TOKEN_KEY, token);
+            return token;
+        }
+
         public AuthenticatableUser check(HttpServletRequest request) {
             AuthenticatableUser user = null;
-            String token = getTokenFromRequest(request);
+            String token = (String)request.getAttribute(AuthProperties.TOKEN_KEY);
             if(token != null) {
                 user = authTokenService.check(token, (String) request.getAttribute(AuthProperties.AGENT_KEY));
             }

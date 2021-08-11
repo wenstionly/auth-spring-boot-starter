@@ -1,6 +1,7 @@
 package cc.lj1.auth.core;
 
 import cc.lj1.auth.AuthenticatableUser;
+import cc.lj1.auth.annotation.RequestAuthenticationToken;
 import cc.lj1.auth.annotation.RequestCurrentUser;
 import cc.lj1.auth.annotation.RequestAgentType;
 import cc.lj1.auth.properties.AuthProperties;
@@ -18,10 +19,11 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
         boolean assignable = methodParameter.getParameterType().isAssignableFrom(AuthenticatableUser.class);
         boolean isInstance = AuthenticatableUser.class.isAssignableFrom(methodParameter.getParameterType());
         boolean hasAnnotation = methodParameter.hasParameterAnnotation(RequestCurrentUser.class);
+        boolean hasTokenAnnotation = methodParameter.hasParameterAnnotation(RequestAuthenticationToken.class);
 
         boolean isAgentType = methodParameter.hasParameterAnnotation(RequestAgentType.class);
 
-        return ((assignable || isInstance) && hasAnnotation) || isAgentType;
+        return ((assignable || isInstance) && hasAnnotation) || isAgentType || hasTokenAnnotation;
     }
 
     @Override
@@ -33,6 +35,8 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
     ) {
         if(methodParameter.hasParameterAnnotation(RequestAgentType.class))
             return nativeWebRequest.getAttribute(AuthProperties.AGENT_KEY, RequestAttributes.SCOPE_REQUEST);
+        else if(methodParameter.hasParameterAnnotation(RequestAuthenticationToken.class))
+            return nativeWebRequest.getAttribute(AuthProperties.TOKEN_KEY, RequestAttributes.SCOPE_REQUEST);
         else
             return nativeWebRequest.getAttribute(AuthProperties.USER_KEY, RequestAttributes.SCOPE_REQUEST);
     }

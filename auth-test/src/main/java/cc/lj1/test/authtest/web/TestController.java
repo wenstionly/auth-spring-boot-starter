@@ -1,9 +1,6 @@
 package cc.lj1.test.authtest.web;
 
-import cc.lj1.auth.annotation.RequestCurrentUser;
-import cc.lj1.auth.annotation.RequestPermission;
-import cc.lj1.auth.annotation.RequestAuthentication;
-import cc.lj1.auth.annotation.RequestAgentType;
+import cc.lj1.auth.annotation.*;
 import cc.lj1.auth.services.AuthTokenService;
 import cc.lj1.test.authtest.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +46,13 @@ public class TestController {
     public String login(@RequestAgentType String agentType, @RequestParam String id) {
         String token = authTokenService.create(id, agentType);
         return token;
+    }
+
+    @GetMapping("/logout")
+    @RequestAuthentication
+    public String logout(@RequestAuthenticationToken String token, @RequestAgentType String agentType) {
+        authTokenService.remove(token, agentType);
+        return "OK";
     }
 
 }
