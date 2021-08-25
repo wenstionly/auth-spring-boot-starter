@@ -214,3 +214,25 @@ public class TestController {
 
 }
 ```
+
+7. 新增一个 ```AuthUtils``` 辅助类
+
+```AuthUtils``` 提供了另外一种获取token、agentType、currentUser等信息的渠道，可以不依赖于 ```@RequestAgentType``` 等注解，方便在非控制器中使用。
+
+该辅助类提供了下面的静态方法：
+
+* ```public static String token()```
+
+从已经认证过的连接中获得附带的token，作用等同于 ```@RequestAuthenticationToken``` 注解。
+
+* ```public static String agentType()```
+
+获取当前连接的设备端类型，作用等同于 ```@RequestAgentType``` 注解。
+
+* ```public static AuthenticatableUser currentUser()```
+
+获取当前用户信息，作用等同于 ```@RequestCurrentUser``` 注解。
+
+* ```public static boolean hasPermission(String acName)```
+
+验证当前用户是否具有某个指定接口的权限，acName为接口名称。

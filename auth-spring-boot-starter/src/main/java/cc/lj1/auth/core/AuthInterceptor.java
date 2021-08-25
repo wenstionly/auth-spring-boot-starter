@@ -4,6 +4,7 @@ import cc.lj1.auth.AuthenticatableRole;
 import cc.lj1.auth.AuthenticatableUser;
 import cc.lj1.auth.annotation.RequestAuthentication;
 import cc.lj1.auth.annotation.RequestPermission;
+import cc.lj1.auth.core.utils.PermissionUtils;
 import cc.lj1.auth.exception.AuthFailedException;
 import cc.lj1.auth.exception.AuthForbiddenException;
 import cc.lj1.auth.properties.AuthProperties;
@@ -43,7 +44,7 @@ class AuthInterceptor implements HandlerInterceptor {
                 AuthenticatableUser user = authHelper.check(request);
                 if(user == null)
                     throw new AuthFailedException();
-                if(!authHelper.checkPermission(user, acName))
+                if(!PermissionUtils.check(user, acName))
                     throw new AuthForbiddenException();
             }
         }
@@ -106,65 +107,6 @@ class AuthInterceptor implements HandlerInterceptor {
             }
             request.setAttribute(AuthProperties.USER_KEY, user);
             return user;
-        }
-
-        public boolean checkPermission(AuthenticatableUser user, String acName) {
-            // 没有登录
-            if(user == null) {
-                return false;
-            }
-            // 超级用户或者不存在接口名称则不需要验证权限
-            if(user.isSuper() || acName == null || acName.isEmpty()) {
-                return true;
-            }
-            final AuthenticatableRole[] roles = user.getRoles();
-            // 角色列表为空则一定失败
-            if(roles == null && roles.length <= 0) {
-                return false;
-            }
-            // 角色
-            String[] acParts = acName.split("\\.");
-            // 检查权限
-            for(AuthenticatableRole role: roles) {
-                if(checkRole(role, acParts)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public boolean checkRole(AuthenticatableRole role, String[] acParts) {
-            if(role == null) {
-                return false;
-            }
-            if(role.isSuper()) {
-                return true;
-            }
-            String[] permissions = role.getPermissions();
-            if(permissions == null || permissions.length <= 0) {
-                return false;
-            }
-            for(String permission: permissions) {
-                if(checkPermission(permission, acParts))
-                    return true;
-            }
-            return false;
-        }
-
-        public boolean checkPermission(String permission, String[] acParts) {
-            // 拆分权限列表中的权限名称
-            String[] permParts = permission.split("\\.");
-            int pos = 0;
-            // 逐级检查
-            while(pos < acParts.length && pos < permParts.length) {
-                if(permParts[pos].equals("*")) {
-                    return true;
-                }
-                if(!permParts[pos].equals(acParts[pos]))
-                    break;
-                pos++;
-            }
-            return (pos == acParts.length) && (pos == permParts.length);
         }
     }
 }

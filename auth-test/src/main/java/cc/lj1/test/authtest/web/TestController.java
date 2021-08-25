@@ -1,6 +1,7 @@
 package cc.lj1.test.authtest.web;
 
 import cc.lj1.auth.annotation.*;
+import cc.lj1.auth.helper.AuthUtils;
 import cc.lj1.auth.services.AuthTokenService;
 import cc.lj1.test.authtest.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +21,14 @@ public class TestController {
 
     @GetMapping("/agent")
     public String testAgengType(@RequestAgentType String agentType) {
-        return "agent type is " + agentType;
+        return "agent type is " + agentType + ", " + AuthUtils.agentType();
     }
 
     @RequestAuthentication
     @GetMapping("/auth")
     public String helloWithAuth(@RequestCurrentUser User user, @RequestAgentType String agentType) {
 //        User user = (User) request.getAttribute(AuthProperties.USER_KEY);
-        return "hello with auth [agentType = " + agentType + "]" + user.toString();
+        return "hello with auth [agentType = " + agentType + "]" + user.toString() + ", " + AuthUtils.currentUser().toString();
     }
 
     @RequestPermission("acl")
