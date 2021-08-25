@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 public class UserService implements AuthUserService {
 
     @Override
-    public AuthenticatableUser getUserById(String id) {
+    public AuthenticatableUser getUserByPrimaryKey(String key) {
         User u = new User();
-        u.setId(id);
+        u.setId(key);
         u.setName("Hello");
         return u;
     }

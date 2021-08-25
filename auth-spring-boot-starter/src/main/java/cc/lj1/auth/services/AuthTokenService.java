@@ -29,7 +29,7 @@ public class AuthTokenService {
         String k = PREFIX_TOKENMAP + agentInfo.getPrefix() + token;
         String uid = cacheUtils.getString(k);
         if(StringUtils.hasLength(uid)) {
-            user = authUserService != null ? authUserService.getUserById(uid) : null;
+            user = authUserService != null ? authUserService.getUserByPrimaryKey(uid) : null;
             if(user == null) {
                 cacheUtils.setString(k, null);
             }

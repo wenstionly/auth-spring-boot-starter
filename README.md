@@ -45,7 +45,7 @@ cc.lj1.auth.agent.desktop.conflict = false # 用于指定是否开启互斥登�
 
 继承 ```AuthenticatableUser``` 接口实现用于存储用户信息的实体类，一般可以同时应用于存储从数据库中获取到的用户信息。
 
-```AuthenticatableUser``` 的 ```getId()``` 方法用于获取用户的索引，其返回一个字符串。如与数据库中的索引类型不同，需自行处理映射关系。
+```AuthenticatableUser``` 的 ```getPrimaryKey()``` 方法用于获取用户的索引，其返回一个字符串。如与数据库中的索引类型不同，需自行处理映射关系。
 
 ```AuthenticatableUser``` 的 ```isSuper()``` 方法用于返回用户是否拥有超级权限，返回 ```true``` 时不管该用户对所有接口都具有访问权限。
 
@@ -80,11 +80,11 @@ import org.springframework.stereotype.Service;
 public class UserService implements AuthUserService {
 
     @Override
-    public AuthenticatableUser getUserById(String id) {
+    public AuthenticatableUser getUserByPrimaryKey(String key) {
         AuthenticatableUser user = null;
         // 从数据库或其他途径，获取索引为id的用户
 
-        return u;
+        return user;
     }
 }
 ```

@@ -1,7 +1,7 @@
 package cc.lj1.auth;
 
 public interface AuthenticatableUser {
-    default String getId() {
+    default String getPrimaryKey() {
         return null;
     }
 
