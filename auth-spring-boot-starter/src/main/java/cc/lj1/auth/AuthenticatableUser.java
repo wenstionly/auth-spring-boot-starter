@@ -5,7 +5,7 @@ public interface AuthenticatableUser {
         return null;
     }
 
-    default boolean isSuper() {
+    default Boolean isSuper() {
         return false;
     }
 
