@@ -9,6 +9,11 @@ public interface AuthenticatableUser {
         return false;
     }
 
+    // 验证权限时，优先使用此接口，如果返回null，则再调用getRoles
+    default String[] getPermissions() {
+        return null;
+    }
+
     default AuthenticatableRole[] getRoles() {
         return null;
     }

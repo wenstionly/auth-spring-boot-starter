@@ -14,13 +14,24 @@ public class PermissionUtils {
         if(user.isSuper() || acName == null || acName.isEmpty()) {
             return true;
         }
+        // 角色
+        String[] acParts = acName.split("\\.");
+        // 优先使用permissions验证
+        final String[] permissions = user.getPermissions();
+        if(permissions != null) {
+            if(permissions.length <= 0)
+                return false;
+            for(String permission: permissions) {
+                if(checkPermission(permission, acParts))
+                    return true;
+            }
+            return false;
+        }
         final AuthenticatableRole[] roles = user.getRoles();
         // 角色列表为空则一定失败
         if(roles == null && roles.length <= 0) {
             return false;
         }
-        // 角色
-        String[] acParts = acName.split("\\.");
         // 检查权限
         for(AuthenticatableRole role: roles) {
             if(checkRole(role, acParts)) {
